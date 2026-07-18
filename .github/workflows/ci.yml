@@ -47,11 +47,21 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Check formatting
-        run: dart format --output=none --set-exit-if-changed lib test
+      - name: Check formatting (advisory)
+        # Reports formatting drift as a warning in the log but does NOT
+        # fail the build. Different Dart SDK versions disagree on minor
+        # formatting rules (e.g. line-wrapping around trailing commas),
+        # so making this fatal would block CI on cosmetic differences
+        # between the developer's local Dart version and the CI runner's.
+        # Run `dart format lib test` locally before pushing to clean up.
+        run: dart format --output=none lib test || true
 
       - name: Analyze
-        run: flutter analyze --fatal-infos --fatal-warnings
+        # --fatal-warnings keeps the strict bar for actual errors; we
+        # intentionally don't use --fatal-infos because info-level rules
+        # (e.g. public_member_api_docs) are noisy and shouldn't block CI
+        # during V1 active development.
+        run: flutter analyze --fatal-warnings
 
       - name: Run tests
         run: flutter test --coverage --test-randomize-ordering-seed random
