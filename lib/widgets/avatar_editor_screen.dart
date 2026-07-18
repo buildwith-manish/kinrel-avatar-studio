@@ -6,6 +6,7 @@ import 'package:flutter/services.dart' show rootBundle, Clipboard;
 import '../models/avatar_config.dart';
 import '../models/avatar_layer.dart';
 import '../registry/asset_manifest.dart';
+import '../registry/avatar_storage.dart';
 import '../registry/base_bodies.dart';
 import '../theme/avatar_studio_theme.dart';
 import 'avatar_renderer.dart';
@@ -45,15 +46,16 @@ class _AvatarEditorScreenState extends State<AvatarEditorScreen> {
   late AvatarConfig _config;
   AssetManifest? _manifest;
   bool _loading = true;
+  bool _hasSavedConfig = false;
 
   @override
   void initState() {
     super.initState();
     _config = widget.initialConfig ?? AvatarConfig.v1Default();
-    _initManifest();
+    _initManifestAndStorage();
   }
 
-  Future<void> _initManifest() async {
+  Future<void> _initManifestAndStorage() async {
     // Touch the AssetManifest.json bundle so we fail loudly here if the
     // pubspec.yaml assets section is mis-configured, rather than silently
     // showing all-placeholder avatars.
@@ -63,10 +65,25 @@ class _AvatarEditorScreenState extends State<AvatarEditorScreen> {
       debugPrint('[AvatarEditorScreen] AssetManifest.json not available yet '
           '(run `flutter pub get` and rebuild): $e');
     }
-    final m = await AssetManifest.load();
+    // Load manifest and saved config in parallel.
+    final results = await Future.wait([
+      AssetManifest.load(),
+      // Only auto-load from storage when no explicit initialConfig was
+      // passed by the caller (e.g. when the app starts fresh from
+      // main.dart with no args).
+      widget.initialConfig == null ? AvatarStorage.load() : Future.value(null),
+      AvatarStorage.hasSavedConfig(),
+    ]);
+    final m = results[0] as AssetManifest;
+    final savedConfig = results[1] as AvatarConfig?;
+    final hasSaved = results[2] as bool;
     if (!mounted) return;
     setState(() {
       _manifest = m;
+      if (savedConfig != null) {
+        _config = savedConfig;
+      }
+      _hasSavedConfig = hasSaved;
       _loading = false;
     });
   }
@@ -129,6 +146,25 @@ class _AvatarEditorScreenState extends State<AvatarEditorScreen> {
                 letterSpacing: 1.2,
               ),
             ),
+            if (_hasSavedConfig) ...[
+              const SizedBox(height: 4),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.cloud_done,
+                      size: 12, color: AvatarStudioTheme.textSecondary),
+                  const SizedBox(width: 4),
+                  Text(
+                    'Saved locally',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: AvatarStudioTheme.textSecondary,
+                      fontSize: 10,
+                    ),
+                  ),
+                ],
+              ),
+            ],
           ],
         ),
       ),
@@ -197,18 +233,29 @@ class _AvatarEditorScreenState extends State<AvatarEditorScreen> {
     );
   }
 
-  // -- Clothing picker ------------------------------------------------------
+  // -- Clothing picker (V1: baked into base body) ---------------------------
+  //
+  // V1 decision: clothing is baked into each base body PNG (the adult_male
+  // PNG already wears a rust polo, the elderly_female already wears a
+  // sari, etc.). Splitting clothing into a true separate swap layer is
+  // deferred to V2 — see docs/V1_CLOTHING_DECISION.md.
+  //
+  // The picker is still shown so the data model field `clothingId`
+  // remains visible and round-trips through JSON correctly, but it
+  // only offers the synthetic "default" option and a note explaining
+  // the V1 limitation.
 
   Widget _buildClothingPicker(ThemeData theme, AssetManifest manifest) {
     final ids = manifest.listIds(AvatarLayer.clothing);
-    // Always offer the synthetic "default" clothing option even if the
-    // folder is empty, so the user can fall back to the default-outfit
-    // convention documented in ANCHOR_SPEC.md.
+    // Always offer the synthetic "default" clothing option (matches
+    // AvatarConfig.v1Default's clothingId). Any PNGs the user later
+    // drops into `clothing/default/` will also show up here.
     final allIds = <String>{'default', ...ids}.toList();
     final options = allIds
         .map((id) => LayerOption(
               id: id,
               label: _humanize(id),
+              sublabel: id == 'default' ? 'Baked into body' : null,
               swatch: AvatarStudioTheme.selected.withOpacity(0.4),
             ))
         .toList();
@@ -415,32 +462,110 @@ class _AvatarEditorScreenState extends State<AvatarEditorScreen> {
           color: AvatarStudioTheme.surfaceRaised,
           border: Border(top: BorderSide(color: AvatarStudioTheme.divider)),
         ),
-        child: FilledButton.icon(
-          onPressed: _onSave,
-          icon: const Icon(Icons.save_outlined),
-          label: const Text('Save Avatar (print JSON)'),
+        child: Row(
+          children: [
+            // Secondary action: reset to defaults (with confirm dialog when
+            // there's a saved config the user would be overwriting).
+            IconButton.outlined(
+              onPressed: _onReset,
+              icon: const Icon(Icons.refresh),
+              tooltip: 'Reset to default',
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: FilledButton.icon(
+                onPressed: _onSave,
+                icon: const Icon(Icons.save_outlined),
+                label: const Text('Save Avatar'),
+              ),
+            ),
+            const SizedBox(width: 8),
+            // Tertiary: copy JSON to clipboard (for debugging / sharing).
+            IconButton.outlined(
+              onPressed: _onCopyJson,
+              icon: const Icon(Icons.copy_outlined),
+              tooltip: 'Copy JSON to clipboard',
+            ),
+          ],
         ),
       ),
     );
   }
 
-  void _onSave() {
+  Future<void> _onSave() async {
     final json = _config.toJson();
     final pretty = const JsonEncoder.withIndent('  ').convert(json);
-    // V1: print to console only. V2 will persist to Supabase.
+    // Still log to console for debugging — the persistence layer is the
+    // real save, but the console output makes it easy to inspect what
+    // would be sent to a backend in V2.
     // ignore: avoid_print
     print('===== AvatarConfig JSON =====\n$pretty\n=============================');
+    // Persist locally via SharedPreferences. Survives app restart.
+    final ok = await AvatarStorage.save(_config);
     if (!mounted) return;
+    setState(() => _hasSavedConfig = ok);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: const Text('Avatar JSON printed to console'),
+        content: Text(ok
+            ? 'Avatar saved (will load on next app start)'
+            : 'Save failed — see console for details'),
         behavior: SnackBarBehavior.floating,
         action: SnackBarAction(
-          label: 'Copy',
+          label: 'Copy JSON',
           onPressed: () async {
             await Clipboard.setData(ClipboardData(text: pretty));
           },
         ),
+      ),
+    );
+  }
+
+  Future<void> _onReset() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Reset avatar?'),
+        content: const Text(
+          'This will discard your current selections and reset to the '
+          'default adult male. Any saved avatar in local storage will '
+          'also be cleared.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Reset'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    await AvatarStorage.clear();
+    if (!mounted) return;
+    setState(() {
+      _config = AvatarConfig.v1Default();
+      _hasSavedConfig = false;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Avatar reset to default'),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  void _onCopyJson() {
+    final pretty =
+        const JsonEncoder.withIndent('  ').convert(_config.toJson());
+    Clipboard.setData(ClipboardData(text: pretty));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Avatar JSON copied to clipboard'),
+        behavior: SnackBarBehavior.floating,
+        duration: Duration(seconds: 2),
       ),
     );
   }

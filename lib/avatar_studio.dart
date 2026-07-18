@@ -19,6 +19,7 @@ export 'models/avatar_layer.dart';
 
 // Registry
 export 'registry/asset_manifest.dart';
+export 'registry/avatar_storage.dart';
 export 'registry/base_bodies.dart';
 
 // Widgets

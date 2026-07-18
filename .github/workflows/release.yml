@@ -1,0 +1,66 @@
+# Release — builds and publishes a signed-flavor release APK as a GitHub
+# Release whenever a version tag (vX.Y.Z) is pushed.
+#
+# Usage:
+#   git tag v0.2.0
+#   git push origin v0.2.0
+#
+# This triggers the workflow, builds the APK, and creates a GitHub Release
+# with auto-generated release notes (from commits since the last tag).
+#
+# V1 signing note: the APK is signed with Flutter's auto-generated debug
+# keystore (suitable for internal distribution / testing). For Play Store
+# submission, add a `keystore` secret and configure `android/key.properties`
+# in a pre-build step. See:
+# https://docs.flutter.dev/deployment/android#signing-the-app
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+env:
+  FLUTTER_VERSION: "3.24.0"
+
+jobs:
+  release:
+    name: Build & Publish APK
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Generate platform folders
+        run: flutter create --org com.kinrel --project-name kinrel_avatar_studio .
+
+      - name: Build release APK
+        run: flutter build apk --release --no-tree-shake-icons
+
+      - name: Rename APK to include tag
+        run: |
+          mv build/app/outputs/flutter-apk/app-release.apk \
+             build/app/outputs/flutter-apk/kinrel-avatar-studio-${GITHUB_REF_NAME}.apk
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/app/outputs/flutter-apk/kinrel-avatar-studio-${{ github.ref_name }}.apk
+          generate_release_notes: true
+          draft: false
+          prerelease: ${{ contains(github.ref_name, '-') }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

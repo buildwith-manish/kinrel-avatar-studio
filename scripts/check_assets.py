@@ -21,6 +21,18 @@ ASSETS = REPO_ROOT / 'assets' / 'avatars'
 EXPECTED_SIZE = (1024, 1536)
 EXPECTED_MODE = 'RGBA'
 
+# The 12 base body IDs — used to decide which PNGs must pass the full
+# anchor contract (head_top_y / feet_bottom_y). Mirrors kBaseBodies
+# in lib/registry/base_bodies.dart; keep in sync when adding bodies.
+EXPECTED_BASE_BODY_IDS = {
+    'child_male', 'child_female',
+    'preteen_male', 'preteen_female',
+    'teen_male', 'teen_female',
+    'adult_male', 'adult_female',
+    'middle_male', 'middle_female',
+    'elderly_male', 'elderly_female',
+}
+
 # Measured anchor targets (per ANCHOR_SPEC.md appendix).
 HEAD_TOP_TARGET = 31
 FEET_BOTTOM_TARGET = 1507
@@ -28,7 +40,14 @@ TOLERANCE_PX = 15
 
 
 def check_png(path: Path) -> list[str]:
-    """Return a list of violation messages. Empty list = pass."""
+    """Return a list of violation messages. Empty list = pass.
+
+    Anchor checks (head_top_y, feet_bottom_y) are only enforced for files
+    at `base/<id>/body.png` because non-base layers (hair, glasses, etc.)
+    legitimately don't span the full canvas height — a pair of glasses only
+    occupies a small region around the eye line. All other PNGs are still
+    checked for canvas size, mode, and non-emptiness.
+    """
     issues: list[str] = []
     try:
         im = Image.open(path)
@@ -40,13 +59,21 @@ def check_png(path: Path) -> list[str]:
     if im.mode != EXPECTED_MODE:
         issues.append(f'mode {im.mode} != {EXPECTED_MODE}')
 
-    # Anchor check -- only meaningful for RGBA PNGs.
+    # Determine whether this is a base-body PNG (full-figure canvas).
+    is_base_body = (
+        path.parent.name in EXPECTED_BASE_BODY_IDS
+        and path.parent.parent.name == 'base'
+        and path.name == 'body.png'
+    )
+
+    # Anchor check — only meaningful for RGBA PNGs.
     if im.mode == 'RGBA':
         alpha = im.split()[-1]
         bbox = alpha.getbbox()
         if bbox is None:
             issues.append('fully transparent (no visible figure)')
-        else:
+        elif is_base_body:
+            # Full anchor contract applies only to base bodies.
             left, upper, right, lower = bbox
             if abs(upper - HEAD_TOP_TARGET) > TOLERANCE_PX:
                 issues.append(
@@ -58,6 +85,12 @@ def check_png(path: Path) -> list[str]:
                     f'feet_bottom_y={lower} (target {FEET_BOTTOM_TARGET}, '
                     f'+/-{TOLERANCE_PX} px tolerance)'
                 )
+        else:
+            # Non-base layers: just sanity-check that the PNG has visible
+            # content somewhere on the canvas (already covered by the
+            # `bbox is None` check above) — don't enforce the full-canvas
+            # anchor contract since glasses, watches, etc. are smaller.
+            pass
     return issues
 
 

@@ -1,0 +1,112 @@
+# Continuous Integration — runs on every push to main and on every PR.
+#
+# Pipeline:
+#   1. Flutter dependency setup
+#   2. dart format --set-exit-if-changed  (enforce formatting)
+#   3. flutter analyze                   (static analysis, fail on any issue)
+#   4. flutter test                       (all unit + widget tests)
+#   5. python scripts/check_assets.py --strict  (PNG canvas/mode/anchor contract)
+#   6. Build release APK                  (only on main, to catch build regressions)
+#   7. Upload APK as artifact             (downloadable from the Actions run page)
+#
+# The build step runs `flutter create .` first because this repo ships without
+# platform folders (android/, ios/, etc.) to keep the diff small and
+# Flutter-version-agnostic. `flutter create .` is idempotent — it only adds
+# the missing platform folders without touching lib/ or pubspec.yaml.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  FLUTTER_VERSION: "3.24.0"
+
+jobs:
+  test:
+    name: Analyze + Test + Asset Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Flutter doctor
+        run: flutter doctor -v
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Check formatting
+        run: dart format --output=none --set-exit-if-changed lib test
+
+      - name: Analyze
+        run: flutter analyze --fatal-infos --fatal-warnings
+
+      - name: Run tests
+        run: flutter test --coverage --test-randomize-ordering-seed random
+
+      - name: Upload coverage
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 14
+
+      - name: Set up Python for asset check
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install Pillow
+        run: pip install pillow
+
+      - name: Validate avatar assets (strict)
+        run: python3 scripts/check_assets.py --strict
+
+  build-apk:
+    name: Build Release APK
+    needs: test
+    runs-on: ubuntu-latest
+    # Only build the APK when code lands on main (not on PRs from forks,
+    # where we just want the test job to pass).
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Generate platform folders (android/, etc.)
+        run: flutter create --org com.kinrel --project-name kinrel_avatar_studio .
+
+      - name: Build release APK
+        run: flutter build apk --release --no-tree-shake-icons
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: kinrel-avatar-studio-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30
+          if-no-files-found: error
