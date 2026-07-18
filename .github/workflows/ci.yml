@@ -57,11 +57,12 @@ jobs:
         run: dart format --output=none lib test || true
 
       - name: Analyze
-        # flutter analyze exits non-zero on errors AND infos by default
-        # in Flutter 3.24. We use --no-fatal-infos to keep the strict
-        # error gate but ignore style suggestions (prefer_const_constructors,
-        # public_member_api_docs, etc.) which are too noisy for V1.
-        run: flutter analyze --no-fatal-infos --no-fatal-warnings
+        # `flutter analyze` exits non-zero on any issue (errors, warnings,
+        # infos) in Flutter 3.24. We accept this strict bar now that the
+        # codebase is clean of prefer_const_constructors and similar
+        # style issues. If a future change introduces info-level noise,
+        # fix the code rather than loosening this gate.
+        run: flutter analyze
 
       - name: Run tests
         run: flutter test --coverage --test-randomize-ordering-seed random
