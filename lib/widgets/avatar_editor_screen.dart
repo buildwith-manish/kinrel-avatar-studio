@@ -141,7 +141,7 @@ class _AvatarEditorScreenState extends State<AvatarEditorScreen> {
 
     // Build pickers in stack order.
     final pickers = <Widget>[
-      _buildBaseBodyPicker(theme),
+      _buildBaseBodyPicker(theme, manifest),
       _buildClothingPicker(theme, manifest),
       // Face detail (V2) — not shown.
       _buildHairPicker(theme, manifest, gender),
@@ -158,14 +158,21 @@ class _AvatarEditorScreenState extends State<AvatarEditorScreen> {
 
   // -- Base body picker (12 options, "None" not allowed) --------------------
 
-  Widget _buildBaseBodyPicker(ThemeData theme) {
+  Widget _buildBaseBodyPicker(ThemeData theme, AssetManifest manifest) {
     final options = kBaseBodies
-        .map((b) => LayerOption(
-              id: b.id,
-              label: b.label.split(' ').first,
-              sublabel: b.ageRange,
-              swatch: _colorForBaseBody(b),
-            ))
+        .map((b) {
+          // Resolve the real PNG path if it exists in the bundle. When
+          // missing (e.g. a future body ID with no PNG yet), fall back
+          // to the colored swatch so the picker still works.
+          final thumbnailPath = manifest.baseBodyPath(b.id);
+          return LayerOption(
+            id: b.id,
+            label: b.label.split(' ').first,
+            sublabel: b.ageRange,
+            swatch: _colorForBaseBody(b),
+            thumbnailPath: thumbnailPath,
+          );
+        })
         .toList();
     return LayerOptionPicker(
       layer: AvatarLayer.baseBody,

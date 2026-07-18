@@ -11,6 +11,11 @@ import '../theme/avatar_studio_theme.dart';
 ///
 /// A "None" chip is shown at the start of the list for nullable layers
 /// (everything except [AvatarLayer.baseBody] and [AvatarLayer.clothing]).
+///
+/// Each option may carry either a [LayerOption.thumbnailPath] (rendered
+/// as a real PNG image — used for the base body picker where we have
+/// standardized artwork) or a [LayerOption.swatch] color (rendered as a
+/// colored circle — used for layers where the PNG doesn't exist yet).
 class LayerOptionPicker extends StatelessWidget {
   const LayerOptionPicker({
     super.key,
@@ -74,7 +79,9 @@ class LayerOptionPicker extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           SizedBox(
-            height: 72,
+            // Taller row when any option has a real thumbnail so the
+            // 2:3 avatar thumbnail has room to breathe.
+            height: _hasThumbnails ? 110 : 72,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               padding: EdgeInsets.zero,
@@ -96,6 +103,7 @@ class LayerOptionPicker extends StatelessWidget {
                   selected: selectedId == option.id,
                   onTap: () => onSelected(option.id),
                   color: option.swatch,
+                  thumbnailPath: option.thumbnailPath,
                 );
               },
             ),
@@ -104,6 +112,9 @@ class LayerOptionPicker extends StatelessWidget {
       ),
     );
   }
+
+  bool get _hasThumbnails =>
+      options.any((o) => o.thumbnailPath != null && o.thumbnailPath!.isNotEmpty);
 }
 
 class _OptionChip extends StatelessWidget {
@@ -113,6 +124,7 @@ class _OptionChip extends StatelessWidget {
     required this.onTap,
     this.sublabel,
     this.color,
+    this.thumbnailPath,
   });
 
   final String label;
@@ -121,8 +133,14 @@ class _OptionChip extends StatelessWidget {
   final VoidCallback onTap;
   final Color? color;
 
+  /// When non-null, renders this PNG (with `BoxFit.contain`) as the
+  /// chip's preview instead of the [color] swatch. Used by the base
+  /// body picker to show real avatar thumbnails.
+  final String? thumbnailPath;
+
   @override
   Widget build(BuildContext context) {
+    final bool useThumbnail = thumbnailPath != null && thumbnailPath!.isNotEmpty;
     return Material(
       color: selected
           ? AvatarStudioTheme.selectedSoft
@@ -132,8 +150,10 @@ class _OptionChip extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Container(
-          width: 92,
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          // Wider chip when showing a real thumbnail so the avatar's
+          // 2:3 aspect ratio has enough horizontal space.
+          width: useThumbnail ? 72 : 92,
+          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 6),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
@@ -146,26 +166,31 @@ class _OptionChip extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (color != null)
-                Container(
-                  width: 28,
-                  height: 28,
-                  margin: const EdgeInsets.only(bottom: 4),
-                  decoration: BoxDecoration(
-                    color: color,
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: Colors.black.withOpacity(0.1),
+              if (useThumbnail)
+                Expanded(
+                  child: AspectRatio(
+                    aspectRatio: AvatarStudioTheme.canvasAspectRatio,
+                    child: ClipRect(
+                      child: Image.asset(
+                        thumbnailPath!,
+                        fit: BoxFit.contain,
+                        alignment: Alignment.topCenter,
+                        errorBuilder: (_, __, ___) =>
+                            _SwatchCircle(color: color),
+                      ),
                     ),
                   ),
-                ),
+                )
+              else if (color != null)
+                _SwatchCircle(color: color),
+              const SizedBox(height: 4),
               Text(
                 label,
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(
-                  fontSize: 11,
+                  fontSize: 10,
                   fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
                   color: selected
                       ? AvatarStudioTheme.selected
@@ -191,6 +216,28 @@ class _OptionChip extends StatelessWidget {
   }
 }
 
+class _SwatchCircle extends StatelessWidget {
+  const _SwatchCircle({required this.color});
+  final Color? color;
+
+  @override
+  Widget build(BuildContext context) {
+    if (color == null) return const SizedBox.shrink();
+    return Container(
+      width: 28,
+      height: 28,
+      margin: const EdgeInsets.only(bottom: 4),
+      decoration: BoxDecoration(
+        color: color,
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: Colors.black.withOpacity(0.1),
+        ),
+      ),
+    );
+  }
+}
+
 /// One selectable option for a layer.
 class LayerOption {
   const LayerOption({
@@ -198,10 +245,19 @@ class LayerOption {
     required this.label,
     this.sublabel,
     this.swatch,
+    this.thumbnailPath,
   });
 
   final String id;
   final String label;
   final String? sublabel;
+
+  /// Fallback colored swatch, shown when [thumbnailPath] is null or
+  /// fails to load.
   final Color? swatch;
+
+  /// Full Flutter asset path to a PNG thumbnail, e.g.
+  /// `assets/avatars/base/adult_male/body.png`. When provided, the
+  /// chip renders the real image instead of the swatch.
+  final String? thumbnailPath;
 }

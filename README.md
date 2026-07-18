@@ -7,11 +7,14 @@
 
 ## Status
 
-**V1 scaffold.** Working editor UI with placeholder rendering for any
-layer whose PNG assets are not yet supplied. Drop real PNGs into the
-asset folders (per [`assets/avatars/ANCHOR_SPEC.md`](assets/avatars/ANCHOR_SPEC.md))
-and they will be picked up automatically on the next build — no code
-changes required.
+**V1 — base bodies populated (12/12).** All 12 standardized base body
+PNGs are in place at `assets/avatars/base/<id>/body.png` and render in
+the editor. All other layers (clothing, hair, glasses, etc.) still use
+the colored-rectangle placeholder fallback — drop real PNGs into the
+respective folders (per
+[`assets/avatars/ANCHOR_SPEC.md`](assets/avatars/ANCHOR_SPEC.md)) and
+they will be picked up automatically on the next build, no code changes
+required.
 
 ---
 
@@ -66,20 +69,22 @@ kinrel-avatar-studio/
 │       └── avatar_studio_theme.dart
 ├── assets/
 │   └── avatars/
-│       ├── ANCHOR_SPEC.md                 # canvas + anchor contract
-│       ├── base/<12 bodies>/body.png      # 12 base body slots
+│       ├── ANCHOR_SPEC.md                 # canvas + anchor contract (measured)
+│       ├── base/<12 bodies>/body.png      # 12 standardized base body PNGs (1024×1536 RGBA)
 │       ├── clothing/{default,tops,bottoms,dresses_kurtas}/
 │       ├── hair/{male,female}/
 │       ├── facial_hair/
 │       ├── eyes_eyebrows/                 # V2 placeholder
 │       ├── glasses/
 │       ├── earrings/
-│       ├── accessories/
-│       └── _raw_uploads/                  # 12 unsorted reference PNGs
+│       └── accessories/
+├── scripts/
+│   └── check_assets.py                    # validates PNG size/mode/anchors
 ├── test/
 │   ├── avatar_config_test.dart
 │   ├── avatar_layer_test.dart
-│   └── base_bodies_test.dart
+│   ├── base_bodies_test.dart
+│   └── standardized_integration_test.dart
 ├── pubspec.yaml
 ├── analysis_options.yaml
 └── README.md  (you are here)
@@ -151,23 +156,10 @@ flutter test
    automatically, and the renderer swaps the placeholder rectangle for
    the real PNG.
 
-4. Once a base body has its real PNG, the corresponding folder's
-   `.gitkeep` file can be deleted (it's only there to preserve empty
-   folder structure in git).
-
-### About `_raw_uploads/`
-
-The 12 PNGs in `assets/avatars/_raw_uploads/` are the **unprocessed**
-reference images supplied at scaffold time. They are NOT yet standardized:
-
-- 10 of them are `1024×1536`, but 2 are `1122×1402`.
-- All are RGB (no transparency) — they will visually occlude lower
-  layers if used as-is.
-
-Once you process them (resize / add transparency / align anchors), move
-each one to the correct `base/<baseBodyId>/body.png` path. The folder
-is declared in `pubspec.yaml` for convenience but is **not** loaded by
-the renderer.
+4. Once a non-base layer folder has its first real PNG, the corresponding
+   folder's `.gitkeep` file can be deleted (it's only there to preserve
+   empty folder structure in git). Base body folders already have their
+   PNGs and no longer carry `.gitkeep`.
 
 ---
 
