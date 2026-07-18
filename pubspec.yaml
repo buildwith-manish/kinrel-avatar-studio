@@ -11,7 +11,12 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.6
-  shared_preferences: ^2.2.3
+  # Pinned tightly to <2.3.0 because shared_preferences_android 2.3.x+
+  # requires Kotlin 1.9 stdlib, which conflicts with the Kotlin 1.7.1
+  # bundled with Flutter 3.24 used in CI. When the CI Flutter version
+  # is bumped to 3.27+ (which bundles Kotlin 1.9), this pin can be
+  # relaxed back to ^2.2.3.
+  shared_preferences: 2.2.3
 
 dev_dependencies:
   flutter_test:
