@@ -55,8 +55,10 @@ class LayerOptionPicker extends StatelessWidget {
               const SizedBox(width: 8),
               if (layer.isV1Skipped)
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: AvatarStudioTheme.surfaceMuted,
                     borderRadius: BorderRadius.circular(4),
@@ -113,8 +115,9 @@ class LayerOptionPicker extends StatelessWidget {
     );
   }
 
-  bool get _hasThumbnails =>
-      options.any((o) => o.thumbnailPath != null && o.thumbnailPath!.isNotEmpty);
+  bool get _hasThumbnails => options.any(
+    (o) => o.thumbnailPath != null && o.thumbnailPath!.isNotEmpty,
+  );
 }
 
 class _OptionChip extends StatelessWidget {
@@ -140,7 +143,8 @@ class _OptionChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool useThumbnail = thumbnailPath != null && thumbnailPath!.isNotEmpty;
+    final bool useThumbnail =
+        thumbnailPath != null && thumbnailPath!.isNotEmpty;
     return Material(
       color: selected
           ? AvatarStudioTheme.selectedSoft
@@ -230,9 +234,7 @@ class _SwatchCircle extends StatelessWidget {
       decoration: BoxDecoration(
         color: color,
         shape: BoxShape.circle,
-        border: Border.all(
-          color: Colors.black.withOpacity(0.1),
-        ),
+        border: Border.all(color: Colors.black.withOpacity(0.1)),
       ),
     );
   }

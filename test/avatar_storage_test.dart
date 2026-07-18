@@ -94,14 +94,16 @@ void main() {
       expect(loaded, original);
     });
 
-    test('load tolerates corrupt stored JSON (returns null, no throw)',
-        () async {
-      // Simulate a corrupt prefs entry by writing raw garbage under the
-      // same key AvatarStorage uses.
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('kinrel.avatar_config.v1', 'not valid json {{{');
-      expect(await AvatarStorage.load(), isNull);
-    });
+    test(
+      'load tolerates corrupt stored JSON (returns null, no throw)',
+      () async {
+        // Simulate a corrupt prefs entry by writing raw garbage under the
+        // same key AvatarStorage uses.
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('kinrel.avatar_config.v1', 'not valid json {{{');
+        expect(await AvatarStorage.load(), isNull);
+      },
+    );
 
     test('load tolerates stored JSON that is not an object', () async {
       final prefs = await SharedPreferences.getInstance();

@@ -62,8 +62,10 @@ class _AvatarEditorScreenState extends State<AvatarEditorScreen> {
     try {
       await rootBundle.loadString('AssetManifest.json');
     } catch (e) {
-      debugPrint('[AvatarEditorScreen] AssetManifest.json not available yet '
-          '(run `flutter pub get` and rebuild): $e');
+      debugPrint(
+        '[AvatarEditorScreen] AssetManifest.json not available yet '
+        '(run `flutter pub get` and rebuild): $e',
+      );
     }
     // Load manifest and saved config in parallel.
     final results = await Future.wait([
@@ -134,10 +136,7 @@ class _AvatarEditorScreenState extends State<AvatarEditorScreen> {
         ),
         child: Column(
           children: [
-            AvatarRenderer(
-              config: _config,
-              manifest: _manifest,
-            ),
+            AvatarRenderer(config: _config, manifest: _manifest),
             const SizedBox(height: 8),
             Text(
               _config.baseBodyId.replaceAll('_', ' ').toUpperCase(),
@@ -152,8 +151,11 @@ class _AvatarEditorScreenState extends State<AvatarEditorScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(Icons.cloud_done,
-                      size: 12, color: AvatarStudioTheme.textSecondary),
+                  Icon(
+                    Icons.cloud_done,
+                    size: 12,
+                    color: AvatarStudioTheme.textSecondary,
+                  ),
                   const SizedBox(width: 4),
                   Text(
                     'Saved locally',
@@ -195,21 +197,19 @@ class _AvatarEditorScreenState extends State<AvatarEditorScreen> {
   // -- Base body picker (12 options, "None" not allowed) --------------------
 
   Widget _buildBaseBodyPicker(ThemeData theme, AssetManifest manifest) {
-    final options = kBaseBodies
-        .map((b) {
-          // Resolve the real PNG path if it exists in the bundle. When
-          // missing (e.g. a future body ID with no PNG yet), fall back
-          // to the colored swatch so the picker still works.
-          final thumbnailPath = manifest.baseBodyPath(b.id);
-          return LayerOption(
-            id: b.id,
-            label: b.label.split(' ').first,
-            sublabel: b.ageRange,
-            swatch: _colorForBaseBody(b),
-            thumbnailPath: thumbnailPath,
-          );
-        })
-        .toList();
+    final options = kBaseBodies.map((b) {
+      // Resolve the real PNG path if it exists in the bundle. When
+      // missing (e.g. a future body ID with no PNG yet), fall back
+      // to the colored swatch so the picker still works.
+      final thumbnailPath = manifest.baseBodyPath(b.id);
+      return LayerOption(
+        id: b.id,
+        label: b.label.split(' ').first,
+        sublabel: b.ageRange,
+        swatch: _colorForBaseBody(b),
+        thumbnailPath: thumbnailPath,
+      );
+    }).toList();
     return LayerOptionPicker(
       layer: AvatarLayer.baseBody,
       options: options,
@@ -222,8 +222,9 @@ class _AvatarEditorScreenState extends State<AvatarEditorScreen> {
           _config = _config.copyWith(
             baseBodyId: id,
             // Drop incompatible selections when switching bodies.
-            facialHairId:
-                newBody?.supportsFacialHair == true ? _config.facialHairId : null,
+            facialHairId: newBody?.supportsFacialHair == true
+                ? _config.facialHairId
+                : null,
             hairId: _config.hairId, // hair folder is gendered; let it stay,
             // the renderer will fall back to placeholder if the gendered
             // folder doesn't contain it.
@@ -252,12 +253,14 @@ class _AvatarEditorScreenState extends State<AvatarEditorScreen> {
     // drops into `clothing/default/` will also show up here.
     final allIds = <String>{'default', ...ids}.toList();
     final options = allIds
-        .map((id) => LayerOption(
-              id: id,
-              label: _humanize(id),
-              sublabel: id == 'default' ? 'Baked into body' : null,
-              swatch: AvatarStudioTheme.selected.withOpacity(0.4),
-            ))
+        .map(
+          (id) => LayerOption(
+            id: id,
+            label: _humanize(id),
+            sublabel: id == 'default' ? 'Baked into body' : null,
+            swatch: AvatarStudioTheme.selected.withOpacity(0.4),
+          ),
+        )
         .toList();
     return LayerOptionPicker(
       layer: AvatarLayer.clothing,
@@ -274,14 +277,19 @@ class _AvatarEditorScreenState extends State<AvatarEditorScreen> {
   // -- Hair picker (gendered folder) ---------------------------------------
 
   Widget _buildHairPicker(
-      ThemeData theme, AssetManifest manifest, Gender? gender) {
+    ThemeData theme,
+    AssetManifest manifest,
+    Gender? gender,
+  ) {
     final ids = manifest.listIds(AvatarLayer.hair, gender: gender);
     final options = ids
-        .map((id) => LayerOption(
-              id: id,
-              label: _humanize(id),
-              swatch: PlaceholderLayer.colorFor(AvatarLayer.hair),
-            ))
+        .map(
+          (id) => LayerOption(
+            id: id,
+            label: _humanize(id),
+            swatch: PlaceholderLayer.colorFor(AvatarLayer.hair),
+          ),
+        )
         .toList();
     return LayerOptionPicker(
       layer: AvatarLayer.hair,
@@ -298,11 +306,13 @@ class _AvatarEditorScreenState extends State<AvatarEditorScreen> {
   Widget _buildFacialHairPicker(ThemeData theme, AssetManifest manifest) {
     final ids = manifest.listIds(AvatarLayer.facialHair);
     final options = ids
-        .map((id) => LayerOption(
-              id: id,
-              label: _humanize(id),
-              swatch: PlaceholderLayer.colorFor(AvatarLayer.facialHair),
-            ))
+        .map(
+          (id) => LayerOption(
+            id: id,
+            label: _humanize(id),
+            swatch: PlaceholderLayer.colorFor(AvatarLayer.facialHair),
+          ),
+        )
         .toList();
     return LayerOptionPicker(
       layer: AvatarLayer.facialHair,
@@ -319,11 +329,13 @@ class _AvatarEditorScreenState extends State<AvatarEditorScreen> {
   Widget _buildEarringsPicker(ThemeData theme, AssetManifest manifest) {
     final ids = manifest.listIds(AvatarLayer.earrings);
     final options = ids
-        .map((id) => LayerOption(
-              id: id,
-              label: _humanize(id),
-              swatch: PlaceholderLayer.colorFor(AvatarLayer.earrings),
-            ))
+        .map(
+          (id) => LayerOption(
+            id: id,
+            label: _humanize(id),
+            swatch: PlaceholderLayer.colorFor(AvatarLayer.earrings),
+          ),
+        )
         .toList();
     return LayerOptionPicker(
       layer: AvatarLayer.earrings,
@@ -340,11 +352,13 @@ class _AvatarEditorScreenState extends State<AvatarEditorScreen> {
   Widget _buildGlassesPicker(ThemeData theme, AssetManifest manifest) {
     final ids = manifest.listIds(AvatarLayer.glasses);
     final options = ids
-        .map((id) => LayerOption(
-              id: id,
-              label: _humanize(id),
-              swatch: PlaceholderLayer.colorFor(AvatarLayer.glasses),
-            ))
+        .map(
+          (id) => LayerOption(
+            id: id,
+            label: _humanize(id),
+            swatch: PlaceholderLayer.colorFor(AvatarLayer.glasses),
+          ),
+        )
         .toList();
     return LayerOptionPicker(
       layer: AvatarLayer.glasses,
@@ -364,14 +378,17 @@ class _AvatarEditorScreenState extends State<AvatarEditorScreen> {
   Widget _buildAccessoriesPicker(ThemeData theme, AssetManifest manifest) {
     final ids = manifest.listIds(AvatarLayer.accessories);
     final options = ids
-        .map((id) => LayerOption(
-              id: id,
-              label: _humanize(id),
-              swatch: PlaceholderLayer.colorFor(AvatarLayer.accessories),
-            ))
+        .map(
+          (id) => LayerOption(
+            id: id,
+            label: _humanize(id),
+            swatch: PlaceholderLayer.colorFor(AvatarLayer.accessories),
+          ),
+        )
         .toList();
-    final String? selectedAccessory =
-        _config.accessoryIds.isEmpty ? null : _config.accessoryIds.first;
+    final String? selectedAccessory = _config.accessoryIds.isEmpty
+        ? null
+        : _config.accessoryIds.first;
     return LayerOptionPicker(
       layer: AvatarLayer.accessories,
       options: options,
@@ -407,8 +424,7 @@ class _AvatarEditorScreenState extends State<AvatarEditorScreen> {
               ),
               const SizedBox(width: 8),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                 decoration: BoxDecoration(
                   color: AvatarStudioTheme.surfaceMuted,
                   borderRadius: BorderRadius.circular(4),
@@ -499,16 +515,20 @@ class _AvatarEditorScreenState extends State<AvatarEditorScreen> {
     // real save, but the console output makes it easy to inspect what
     // would be sent to a backend in V2.
     // ignore: avoid_print
-    print('===== AvatarConfig JSON =====\n$pretty\n=============================');
+    print(
+      '===== AvatarConfig JSON =====\n$pretty\n=============================',
+    );
     // Persist locally via SharedPreferences. Survives app restart.
     final ok = await AvatarStorage.save(_config);
     if (!mounted) return;
     setState(() => _hasSavedConfig = ok);
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(ok
-            ? 'Avatar saved (will load on next app start)'
-            : 'Save failed — see console for details'),
+        content: Text(
+          ok
+              ? 'Avatar saved (will load on next app start)'
+              : 'Save failed — see console for details',
+        ),
         behavior: SnackBarBehavior.floating,
         action: SnackBarAction(
           label: 'Copy JSON',
@@ -558,8 +578,7 @@ class _AvatarEditorScreenState extends State<AvatarEditorScreen> {
   }
 
   void _onCopyJson() {
-    final pretty =
-        const JsonEncoder.withIndent('  ').convert(_config.toJson());
+    final pretty = const JsonEncoder.withIndent('  ').convert(_config.toJson());
     Clipboard.setData(ClipboardData(text: pretty));
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(

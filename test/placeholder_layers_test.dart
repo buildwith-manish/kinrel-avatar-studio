@@ -20,14 +20,20 @@ void main() {
   group('Hair library (placeholder PNGs)', () {
     test('male hair folder has at least 8 options', () async {
       final ids = manifest.listIds(AvatarLayer.hair, gender: Gender.male);
-      expect(ids.length, greaterThanOrEqualTo(8),
-          reason: 'spec requires 8-10 male hairstyles');
+      expect(
+        ids.length,
+        greaterThanOrEqualTo(8),
+        reason: 'spec requires 8-10 male hairstyles',
+      );
     });
 
     test('female hair folder has at least 8 options', () async {
       final ids = manifest.listIds(AvatarLayer.hair, gender: Gender.female);
-      expect(ids.length, greaterThanOrEqualTo(8),
-          reason: 'spec requires 8-10 female hairstyles');
+      expect(
+        ids.length,
+        greaterThanOrEqualTo(8),
+        reason: 'spec requires 8-10 female hairstyles',
+      );
     });
 
     test('every male hair ID resolves to a bundled PNG path', () {
@@ -57,45 +63,55 @@ void main() {
     });
 
     test('known placeholder hair IDs are present (sanity check)', () {
-      final maleIds =
-          manifest.listIds(AvatarLayer.hair, gender: Gender.male).toSet();
-      final femaleIds =
-          manifest.listIds(AvatarLayer.hair, gender: Gender.female).toSet();
+      final maleIds = manifest
+          .listIds(AvatarLayer.hair, gender: Gender.male)
+          .toSet();
+      final femaleIds = manifest
+          .listIds(AvatarLayer.hair, gender: Gender.female)
+          .toSet();
 
       // A subset of IDs we know were generated. If any of these are
       // missing, the generator script was edited without updating
       // expectations — investigate before changing this test.
-      expect(maleIds, containsAll(<String>[
-        'short_cropped',
-        'short_side_part',
-        'buzz_cut',
-        'man_bun',
-        'clean_shaven',
-      ]));
-      expect(femaleIds, containsAll(<String>[
-        'long_straight',
-        'shoulder_bob',
-        'ponytail',
-        'hair_bun',
-        'pixie_cut',
-      ]));
+      expect(
+        maleIds,
+        containsAll(<String>[
+          'short_cropped',
+          'short_side_part',
+          'buzz_cut',
+          'man_bun',
+          'clean_shaven',
+        ]),
+      );
+      expect(
+        femaleIds,
+        containsAll(<String>[
+          'long_straight',
+          'shoulder_bob',
+          'ponytail',
+          'hair_bun',
+          'pixie_cut',
+        ]),
+      );
     });
   });
 
   group('Glasses library (placeholder PNGs)', () {
     test('glasses folder has at least 3 options', () {
       final ids = manifest.listIds(AvatarLayer.glasses);
-      expect(ids.length, greaterThanOrEqualTo(3),
-          reason: 'spec requires 3-4 glasses styles');
+      expect(
+        ids.length,
+        greaterThanOrEqualTo(3),
+        reason: 'spec requires 3-4 glasses styles',
+      );
     });
 
     test('known placeholder glasses IDs are present', () {
       final ids = manifest.listIds(AvatarLayer.glasses).toSet();
-      expect(ids, containsAll(<String>[
-        'round_black',
-        'square_black',
-        'aviator_gold',
-      ]));
+      expect(
+        ids,
+        containsAll(<String>['round_black', 'square_black', 'aviator_gold']),
+      );
     });
 
     test('every glasses ID resolves to a bundled PNG path', () {
@@ -111,8 +127,11 @@ void main() {
   group('Accessories library (placeholder PNGs)', () {
     test('accessories folder has at least 2 options', () {
       final ids = manifest.listIds(AvatarLayer.accessories);
-      expect(ids.length, greaterThanOrEqualTo(2),
-          reason: 'spec requires at least a watch + a necklace');
+      expect(
+        ids.length,
+        greaterThanOrEqualTo(2),
+        reason: 'spec requires at least a watch + a necklace',
+      );
     });
 
     test('known placeholder accessory IDs are present', () {
@@ -123,8 +142,7 @@ void main() {
     test('every accessory ID resolves to a bundled PNG path', () {
       final ids = manifest.listIds(AvatarLayer.accessories);
       for (final id in ids) {
-        final path =
-            manifest.resolveLayerPath(AvatarLayer.accessories, id: id);
+        final path = manifest.resolveLayerPath(AvatarLayer.accessories, id: id);
         expect(path, isNotNull, reason: 'accessory "$id" has no PNG');
         expect(path!.startsWith('assets/avatars/accessories/'), isTrue);
       }
@@ -136,8 +154,7 @@ void main() {
       for (final b in kBaseBodies) {
         final path = manifest.baseBodyPath(b.id);
         expect(path, isNotNull, reason: '${b.id} is missing body.png');
-        expect(path,
-            'assets/avatars/base/${b.id}/body.png');
+        expect(path, 'assets/avatars/base/${b.id}/body.png');
       }
     });
   });

@@ -67,15 +67,15 @@ class AvatarConfig {
   /// V1 default config — adult male, default skin tone, default
   /// clothing, no optional layers. Used as the editor's initial state.
   factory AvatarConfig.v1Default() => const AvatarConfig(
-        baseBodyId: 'adult_male',
-        skinToneId: 'tone_1',
-        clothingId: 'default',
-        hairId: null,
-        facialHairId: null,
-        glassesId: null,
-        earringsId: null,
-        accessoryIds: [],
-      );
+    baseBodyId: 'adult_male',
+    skinToneId: 'tone_1',
+    clothingId: 'default',
+    hairId: null,
+    facialHairId: null,
+    glassesId: null,
+    earringsId: null,
+    accessoryIds: [],
+  );
 
   /// Returns a copy with the given fields replaced. Used by the editor
   /// to produce immutable updates on each selection change.
@@ -153,7 +153,8 @@ class AvatarConfig {
       facialHairId: json[AvatarLayer.facialHair.wireKey] as String?,
       glassesId: json[AvatarLayer.glasses.wireKey] as String?,
       earringsId: json[AvatarLayer.earrings.wireKey] as String?,
-      accessoryIds: (json[AvatarLayer.accessories.wireKey] as List<dynamic>?)
+      accessoryIds:
+          (json[AvatarLayer.accessories.wireKey] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
           const [],
@@ -202,15 +203,15 @@ class AvatarConfig {
 
   @override
   int get hashCode => Object.hash(
-        baseBodyId,
-        skinToneId,
-        clothingId,
-        hairId,
-        facialHairId,
-        glassesId,
-        earringsId,
-        Object.hashAll(accessoryIds),
-      );
+    baseBodyId,
+    skinToneId,
+    clothingId,
+    hairId,
+    facialHairId,
+    glassesId,
+    earringsId,
+    Object.hashAll(accessoryIds),
+  );
 
   @override
   String toString() => 'AvatarConfig(${toJson()})';

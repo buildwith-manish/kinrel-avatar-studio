@@ -36,7 +36,8 @@ class AssetManifest {
   /// returned instance.
   static Future<AssetManifest> load() async {
     final String raw = await rootBundle.loadString('AssetManifest.json');
-    final Map<String, dynamic> decoded = json.decode(raw) as Map<String, dynamic>;
+    final Map<String, dynamic> decoded =
+        json.decode(raw) as Map<String, dynamic>;
     final entries = decoded.keys.toSet();
     if (kDebugMode) {
       debugPrint('[AssetManifest] loaded ${entries.length} bundled assets');
@@ -59,10 +60,13 @@ class AssetManifest {
   /// Returns IDs in alphabetical order for stable picker ordering.
   List<String> listIds(AvatarLayer layer, {Gender? gender}) {
     final String prefix = _folderPrefix(layer, gender: gender);
-    final matches = _entries
-        .where((p) => p.startsWith(prefix) && p.toLowerCase().endsWith('.png'))
-        .toList()
-      ..sort();
+    final matches =
+        _entries
+            .where(
+              (p) => p.startsWith(prefix) && p.toLowerCase().endsWith('.png'),
+            )
+            .toList()
+          ..sort();
     return matches.map(_idFromPath).where((id) => id.isNotEmpty).toList();
   }
 

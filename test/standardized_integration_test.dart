@@ -42,8 +42,11 @@ void main() {
     test('every base body ID is non-empty and snake_case', () {
       for (final b in kBaseBodies) {
         expect(b.id.isNotEmpty, isTrue, reason: '${b.label} has empty id');
-        expect(RegExp(r'^[a-z]+_[a-z]+$').hasMatch(b.id), isTrue,
-            reason: '${b.label} id "${b.id}" is not snake_case');
+        expect(
+          RegExp(r'^[a-z]+_[a-z]+$').hasMatch(b.id),
+          isTrue,
+          reason: '${b.label} id "${b.id}" is not snake_case',
+        );
       }
     });
 
@@ -64,20 +67,34 @@ void main() {
       // PlaceholderLayer.colorFor(layer). These colors must stay
       // stable across versions because users may screenshot the
       // editor and reference specific colors when reporting bugs.
-      expect(PlaceholderLayer.colorFor(AvatarLayer.baseBody),
-          const Color(0xFFF2C9A0));
-      expect(PlaceholderLayer.colorFor(AvatarLayer.clothing),
-          const Color(0xFF7BA7D9));
-      expect(PlaceholderLayer.colorFor(AvatarLayer.hair),
-          const Color(0xFF4A2C2A));
-      expect(PlaceholderLayer.colorFor(AvatarLayer.facialHair),
-          const Color(0xFF6B4226));
-      expect(PlaceholderLayer.colorFor(AvatarLayer.earrings),
-          const Color(0xFFE0C36B));
-      expect(PlaceholderLayer.colorFor(AvatarLayer.glasses),
-          const Color(0xFF37474F));
-      expect(PlaceholderLayer.colorFor(AvatarLayer.accessories),
-          const Color(0xFF8E6E53));
+      expect(
+        PlaceholderLayer.colorFor(AvatarLayer.baseBody),
+        const Color(0xFFF2C9A0),
+      );
+      expect(
+        PlaceholderLayer.colorFor(AvatarLayer.clothing),
+        const Color(0xFF7BA7D9),
+      );
+      expect(
+        PlaceholderLayer.colorFor(AvatarLayer.hair),
+        const Color(0xFF4A2C2A),
+      );
+      expect(
+        PlaceholderLayer.colorFor(AvatarLayer.facialHair),
+        const Color(0xFF6B4226),
+      );
+      expect(
+        PlaceholderLayer.colorFor(AvatarLayer.earrings),
+        const Color(0xFFE0C36B),
+      );
+      expect(
+        PlaceholderLayer.colorFor(AvatarLayer.glasses),
+        const Color(0xFF37474F),
+      );
+      expect(
+        PlaceholderLayer.colorFor(AvatarLayer.accessories),
+        const Color(0xFF8E6E53),
+      );
     });
 
     test('V1 renderer skips V2 layers even if config references them', () {
@@ -91,7 +108,11 @@ void main() {
         if (l == AvatarLayer.faceDetail || l == AvatarLayer.eyesEyebrows) {
           continue;
         }
-        expect(l.isV1Skipped, isFalse, reason: '${l.name} should not be V1-skipped');
+        expect(
+          l.isV1Skipped,
+          isFalse,
+          reason: '${l.name} should not be V1-skipped',
+        );
       }
     });
 

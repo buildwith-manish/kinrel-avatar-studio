@@ -99,30 +99,33 @@ class _AvatarRendererState extends State<AvatarRenderer> {
     // 1. Base body — always rendered. Placeholder when PNG missing.
     final bodyPath = manifest.baseBodyPath(config.baseBodyId);
     if (bodyPath != null) {
-      children.add(Positioned.fill(
-        child: Image.asset(bodyPath, fit: BoxFit.contain),
-      ));
+      children.add(
+        Positioned.fill(child: Image.asset(bodyPath, fit: BoxFit.contain)),
+      );
     } else if (widget.showPlaceholders) {
-      children.add(PlaceholderLayer(
-        layer: AvatarLayer.baseBody,
-        label: baseBody?.label ?? config.baseBodyId,
-      ));
+      children.add(
+        PlaceholderLayer(
+          layer: AvatarLayer.baseBody,
+          label: baseBody?.label ?? config.baseBodyId,
+        ),
+      );
     }
 
     // 2. Clothing — placeholder when missing.
-    final clothingPath = manifest.resolveLayerPath(
-      AvatarLayer.clothing,
-      id: config.clothingId,
-    ) ?? manifest.defaultClothingPath(config.baseBodyId);
+    final clothingPath =
+        manifest.resolveLayerPath(
+          AvatarLayer.clothing,
+          id: config.clothingId,
+        ) ??
+        manifest.defaultClothingPath(config.baseBodyId);
     if (clothingPath != null) {
-      children.add(Positioned.fill(
-        child: Image.asset(clothingPath, fit: BoxFit.contain),
-      ));
+      children.add(
+        Positioned.fill(child: Image.asset(clothingPath, fit: BoxFit.contain)),
+      );
     } else if (widget.showPlaceholders) {
-      children.add(PlaceholderLayer(
-        layer: AvatarLayer.clothing,
-        label: config.clothingId,
-      ));
+      children.add(
+        PlaceholderLayer(layer: AvatarLayer.clothing, label: config.clothingId),
+      );
     }
 
     // 3. Face detail — V2, skipped.
@@ -136,14 +139,13 @@ class _AvatarRendererState extends State<AvatarRenderer> {
         gender: gender,
       );
       if (hairPath != null) {
-        children.add(Positioned.fill(
-          child: Image.asset(hairPath, fit: BoxFit.contain),
-        ));
+        children.add(
+          Positioned.fill(child: Image.asset(hairPath, fit: BoxFit.contain)),
+        );
       } else if (widget.showPlaceholders) {
-        children.add(PlaceholderLayer(
-          layer: AvatarLayer.hair,
-          label: config.hairId!,
-        ));
+        children.add(
+          PlaceholderLayer(layer: AvatarLayer.hair, label: config.hairId!),
+        );
       }
     }
 
@@ -154,14 +156,16 @@ class _AvatarRendererState extends State<AvatarRenderer> {
         id: config.facialHairId!,
       );
       if (fhPath != null) {
-        children.add(Positioned.fill(
-          child: Image.asset(fhPath, fit: BoxFit.contain),
-        ));
+        children.add(
+          Positioned.fill(child: Image.asset(fhPath, fit: BoxFit.contain)),
+        );
       } else if (widget.showPlaceholders) {
-        children.add(PlaceholderLayer(
-          layer: AvatarLayer.facialHair,
-          label: config.facialHairId!,
-        ));
+        children.add(
+          PlaceholderLayer(
+            layer: AvatarLayer.facialHair,
+            label: config.facialHairId!,
+          ),
+        );
       }
     }
 
@@ -175,14 +179,16 @@ class _AvatarRendererState extends State<AvatarRenderer> {
         id: config.earringsId!,
       );
       if (ePath != null) {
-        children.add(Positioned.fill(
-          child: Image.asset(ePath, fit: BoxFit.contain),
-        ));
+        children.add(
+          Positioned.fill(child: Image.asset(ePath, fit: BoxFit.contain)),
+        );
       } else if (widget.showPlaceholders) {
-        children.add(PlaceholderLayer(
-          layer: AvatarLayer.earrings,
-          label: config.earringsId!,
-        ));
+        children.add(
+          PlaceholderLayer(
+            layer: AvatarLayer.earrings,
+            label: config.earringsId!,
+          ),
+        );
       }
     }
 
@@ -193,14 +199,16 @@ class _AvatarRendererState extends State<AvatarRenderer> {
         id: config.glassesId!,
       );
       if (gPath != null) {
-        children.add(Positioned.fill(
-          child: Image.asset(gPath, fit: BoxFit.contain),
-        ));
+        children.add(
+          Positioned.fill(child: Image.asset(gPath, fit: BoxFit.contain)),
+        );
       } else if (widget.showPlaceholders) {
-        children.add(PlaceholderLayer(
-          layer: AvatarLayer.glasses,
-          label: config.glassesId!,
-        ));
+        children.add(
+          PlaceholderLayer(
+            layer: AvatarLayer.glasses,
+            label: config.glassesId!,
+          ),
+        );
       }
     }
 
@@ -211,20 +219,16 @@ class _AvatarRendererState extends State<AvatarRenderer> {
         id: accId,
       );
       if (aPath != null) {
-        children.add(Positioned.fill(
-          child: Image.asset(aPath, fit: BoxFit.contain),
-        ));
+        children.add(
+          Positioned.fill(child: Image.asset(aPath, fit: BoxFit.contain)),
+        );
       } else if (widget.showPlaceholders) {
-        children.add(PlaceholderLayer(
-          layer: AvatarLayer.accessories,
-          label: accId,
-        ));
+        children.add(
+          PlaceholderLayer(layer: AvatarLayer.accessories, label: accId),
+        );
       }
     }
 
-    return Stack(
-      fit: StackFit.expand,
-      children: children,
-    );
+    return Stack(fit: StackFit.expand, children: children);
   }
 }

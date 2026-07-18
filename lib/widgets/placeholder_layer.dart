@@ -15,11 +15,7 @@ import '../models/avatar_layer.dart';
 /// into the corresponding asset folder, [AvatarRenderer] picks it up
 /// automatically via [AssetManifest] and the placeholder disappears.
 class PlaceholderLayer extends StatelessWidget {
-  const PlaceholderLayer({
-    super.key,
-    required this.layer,
-    this.label,
-  });
+  const PlaceholderLayer({super.key, required this.layer, this.label});
 
   final AvatarLayer layer;
   final String? label;
@@ -83,11 +79,7 @@ class _PlaceholderPainter extends CustomPainter {
     const dashSpace = 6.0;
     double x = 0;
     while (x < size.width) {
-      canvas.drawLine(
-        Offset(x, 0),
-        Offset(x + dashWidth, 0),
-        borderPaint,
-      );
+      canvas.drawLine(Offset(x, 0), Offset(x + dashWidth, 0), borderPaint);
       canvas.drawLine(
         Offset(x, size.height),
         Offset(x + dashWidth, size.height),
@@ -97,11 +89,7 @@ class _PlaceholderPainter extends CustomPainter {
     }
     double y = 0;
     while (y < size.height) {
-      canvas.drawLine(
-        Offset(0, y),
-        Offset(0, y + dashWidth),
-        borderPaint,
-      );
+      canvas.drawLine(Offset(0, y), Offset(0, y + dashWidth), borderPaint);
       canvas.drawLine(
         Offset(size.width, y),
         Offset(size.width, y + dashWidth),
@@ -125,10 +113,7 @@ class _PlaceholderPainter extends CustomPainter {
     )..layout(maxWidth: size.width - 24);
     tp.paint(
       canvas,
-      Offset(
-        (size.width - tp.width) / 2,
-        (size.height - tp.height) / 2,
-      ),
+      Offset((size.width - tp.width) / 2, (size.height - tp.height) / 2),
     );
   }
 
