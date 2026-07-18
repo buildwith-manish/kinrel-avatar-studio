@@ -1,0 +1,49 @@
+name: kinrel_avatar_studio
+description: "Kinrel Avatar Studio — a modular, layer-based avatar creation system for the Kinrel app. Standalone V1 scaffold."
+publish_to: "none"
+version: 0.1.0+1
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+  flutter: ">=3.19.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.6
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
+
+  # Declares entire avatar asset directories so any new PNG dropped in is
+  # automatically bundled and discoverable via AssetManifest.json at runtime.
+  assets:
+    - assets/avatars/base/
+    - assets/avatars/base/child_male/
+    - assets/avatars/base/child_female/
+    - assets/avatars/base/preteen_male/
+    - assets/avatars/base/preteen_female/
+    - assets/avatars/base/teen_male/
+    - assets/avatars/base/teen_female/
+    - assets/avatars/base/adult_male/
+    - assets/avatars/base/adult_female/
+    - assets/avatars/base/middle_male/
+    - assets/avatars/base/middle_female/
+    - assets/avatars/base/elderly_male/
+    - assets/avatars/base/elderly_female/
+    - assets/avatars/clothing/default/
+    - assets/avatars/clothing/tops/
+    - assets/avatars/clothing/bottoms/
+    - assets/avatars/clothing/dresses_kurtas/
+    - assets/avatars/hair/male/
+    - assets/avatars/hair/female/
+    - assets/avatars/facial_hair/
+    - assets/avatars/eyes_eyebrows/
+    - assets/avatars/glasses/
+    - assets/avatars/earrings/
+    - assets/avatars/accessories/

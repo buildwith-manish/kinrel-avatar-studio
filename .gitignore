@@ -1,0 +1,116 @@
+# =============================================================================
+# Flutter / Dart
+# =============================================================================
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+.build/
+.dart_tool/flutter_build/
+dart_tool/
+*.dart_tool/
+.fvm/
+.fvmrc
+
+# Coverage
+coverage/
+lcov.info
+
+# =============================================================================
+# Android (Termux-friendly)
+# =============================================================================
+android/.gradle/
+android/captures/
+android/gradlew
+android/gradlew.bat
+android/local.properties
+android/key.properties
+**/android/**/gradle-wrapper.jar
+**/android/.cxx/
+*.apk
+*.aab
+*.ap_
+*.dex
+*.keystore
+!debug.keystore
+projectKeys/
+
+# =============================================================================
+# iOS / macOS
+# =============================================================================
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/flutter_export_environment.sh
+ios/Flutter/Generated.xcconfig
+ios/Flutter/app.flx
+ios/Flutter/app.zip
+ios/Flutter/flutter_assets/
+ios/Flutter/flutter_export_environment.sh
+ios/ServiceDefinitions.json
+ios/Runner/GeneratedPluginRegistrant.*
+ios/Runner/google-service-info.plist
+macos/Flutter/ephemeral/
+macos/Flutter/podhelper.rb
+macos/Flutter/GeneratedPluginRegistrant.swift
+
+# =============================================================================
+# Termux-specific
+# =============================================================================
+.termux/
+$HOME/.pub-cache/
+*.lock.db
+nohup.out
+
+# =============================================================================
+# IDE / Editor
+# =============================================================================
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+*.code-workspace
+.project
+.classpath
+.settings/
+*.swp
+*.swo
+*~
+.history/
+
+# =============================================================================
+# OS files
+# =============================================================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# =============================================================================
+# Generated platform folders (optional — uncomment to ignore if you regenerate
+# platform folders via `flutter create .` after pulling this scaffold)
+# =============================================================================
+# android/
+# ios/
+# linux/
+# macos/
+# web/
+# windows/
+
+# =============================================================================
+# Logs & env
+# =============================================================================
+*.log
+.env
+.env.local
+.env.*.local
+secrets.json
