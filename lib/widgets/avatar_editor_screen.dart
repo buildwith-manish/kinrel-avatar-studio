@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart' show rootBundle, Clipboard;
+import 'package:flutter/services.dart' show Clipboard, ClipboardData, rootBundle;
 
 import '../models/avatar_config.dart';
 import '../models/avatar_layer.dart';
@@ -11,6 +11,7 @@ import '../registry/base_bodies.dart';
 import '../theme/avatar_studio_theme.dart';
 import 'avatar_renderer.dart';
 import 'layer_option_picker.dart';
+import 'placeholder_layer.dart';
 
 /// Top-level V1 editor screen.
 ///
