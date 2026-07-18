@@ -25,7 +25,7 @@ void main() {
     });
 
     test('save persists the config and load round-trips it', () async {
-      final original = AvatarConfig(
+      const original = AvatarConfig(
         baseBodyId: 'teen_female',
         skinToneId: 'tone_3',
         clothingId: 'default',
@@ -51,12 +51,12 @@ void main() {
     });
 
     test('save overwrites the previous saved config', () async {
-      final first = AvatarConfig(
+      const first = AvatarConfig(
         baseBodyId: 'adult_male',
         skinToneId: 'tone_1',
         clothingId: 'default',
       );
-      final second = AvatarConfig(
+      const second = AvatarConfig(
         baseBodyId: 'elderly_female',
         skinToneId: 'tone_5',
         clothingId: 'default',

@@ -38,10 +38,10 @@ class AvatarStudioTheme {
       ),
       scaffoldBackgroundColor: surface,
       dividerColor: divider,
-      cardTheme: CardTheme(
+      cardTheme: const CardTheme(
         color: surfaceRaised,
         elevation: 0,
-        shape: const RoundedRectangleBorder(
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(16)),
           side: BorderSide(color: divider),
         ),

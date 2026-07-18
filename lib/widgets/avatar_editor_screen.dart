@@ -152,7 +152,7 @@ class _AvatarEditorScreenState extends State<AvatarEditorScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.cloud_done,
                     size: 12,
                     color: AvatarStudioTheme.textSecondary,
@@ -475,7 +475,7 @@ class _AvatarEditorScreenState extends State<AvatarEditorScreen> {
     return SafeArea(
       child: Container(
         padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           color: AvatarStudioTheme.surfaceRaised,
           border: Border(top: BorderSide(color: AvatarStudioTheme.divider)),
         ),

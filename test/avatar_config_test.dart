@@ -16,7 +16,7 @@ void main() {
     });
 
     test('toJson includes schema envelope and omits null optionals', () {
-      final c = AvatarConfig(
+      const c = AvatarConfig(
         baseBodyId: 'teen_female',
         skinToneId: 'tone_2',
         clothingId: 'hoodie_amber',
@@ -35,7 +35,7 @@ void main() {
     });
 
     test('toJson includes optionals when set', () {
-      final c = AvatarConfig(
+      const c = AvatarConfig(
         baseBodyId: 'adult_male',
         skinToneId: 'tone_3',
         clothingId: 'kurta_white',
@@ -54,7 +54,7 @@ void main() {
     });
 
     test('fromJson round-trips toJson for a fully-populated config', () {
-      final original = AvatarConfig(
+      const original = AvatarConfig(
         baseBodyId: 'elderly_female',
         skinToneId: 'tone_5',
         clothingId: 'sari_red',
@@ -91,7 +91,7 @@ void main() {
     });
 
     test('copyWith preserves untouched fields and updates provided ones', () {
-      final base = AvatarConfig(
+      const base = AvatarConfig(
         baseBodyId: 'adult_male',
         skinToneId: 'tone_1',
         clothingId: 'default',
@@ -105,7 +105,7 @@ void main() {
     });
 
     test('copyWith can explicitly set a nullable field to null', () {
-      final base = AvatarConfig(
+      const base = AvatarConfig(
         baseBodyId: 'adult_male',
         skinToneId: 'tone_1',
         clothingId: 'default',
@@ -116,13 +116,13 @@ void main() {
     });
 
     test('equality treats same field values as equal', () {
-      final a = AvatarConfig(
+      const a = AvatarConfig(
         baseBodyId: 'adult_male',
         skinToneId: 'tone_1',
         clothingId: 'default',
         accessoryIds: const ['watch_silver', 'hat_cap'],
       );
-      final b = AvatarConfig(
+      const b = AvatarConfig(
         baseBodyId: 'adult_male',
         skinToneId: 'tone_1',
         clothingId: 'default',
@@ -133,13 +133,13 @@ void main() {
     });
 
     test('equality is sensitive to accessory order', () {
-      final a = AvatarConfig(
+      const a = AvatarConfig(
         baseBodyId: 'adult_male',
         skinToneId: 'tone_1',
         clothingId: 'default',
         accessoryIds: const ['watch_silver', 'hat_cap'],
       );
-      final b = AvatarConfig(
+      const b = AvatarConfig(
         baseBodyId: 'adult_male',
         skinToneId: 'tone_1',
         clothingId: 'default',

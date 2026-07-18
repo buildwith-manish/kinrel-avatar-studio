@@ -119,7 +119,7 @@ void main() {
     test('switching base body to female clears facial hair selection', () {
       // AvatarEditorScreen enforces this on body change — here we
       // replicate the same copyWith logic to lock in the contract.
-      final male = AvatarConfig(
+      const male = AvatarConfig(
         baseBodyId: 'adult_male',
         skinToneId: 'tone_1',
         clothingId: 'default',
