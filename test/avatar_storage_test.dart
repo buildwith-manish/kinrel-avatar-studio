@@ -31,7 +31,7 @@ void main() {
         clothingId: 'default',
         hairId: 'long_straight',
         glassesId: 'round_black',
-        accessoryIds: const ['pendant_necklace'],
+        accessoryIds: ['pendant_necklace'],
       );
       final savedOk = await AvatarStorage.save(original);
       expect(savedOk, isTrue);

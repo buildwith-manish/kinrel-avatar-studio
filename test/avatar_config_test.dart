@@ -43,7 +43,7 @@ void main() {
         facialHairId: 'beard_full',
         glassesId: 'round_black',
         earringsId: 'stud_gold',
-        accessoryIds: const ['watch_silver', 'hat_cap'],
+        accessoryIds: ['watch_silver', 'hat_cap'],
       );
       final json = c.toJson();
       expect(json['hair'], 'curly_black');
@@ -62,7 +62,7 @@ void main() {
         facialHairId: null,
         glassesId: 'cat_eye',
         earringsId: 'hoop_gold',
-        accessoryIds: const ['necklace_pearl'],
+        accessoryIds: ['necklace_pearl'],
       );
       final roundTripped = AvatarConfig.fromJson(original.toJson());
       expect(roundTripped, original);
@@ -120,13 +120,13 @@ void main() {
         baseBodyId: 'adult_male',
         skinToneId: 'tone_1',
         clothingId: 'default',
-        accessoryIds: const ['watch_silver', 'hat_cap'],
+        accessoryIds: ['watch_silver', 'hat_cap'],
       );
       const b = AvatarConfig(
         baseBodyId: 'adult_male',
         skinToneId: 'tone_1',
         clothingId: 'default',
-        accessoryIds: const ['watch_silver', 'hat_cap'],
+        accessoryIds: ['watch_silver', 'hat_cap'],
       );
       expect(a, equals(b));
       expect(a.hashCode, b.hashCode);
@@ -137,13 +137,13 @@ void main() {
         baseBodyId: 'adult_male',
         skinToneId: 'tone_1',
         clothingId: 'default',
-        accessoryIds: const ['watch_silver', 'hat_cap'],
+        accessoryIds: ['watch_silver', 'hat_cap'],
       );
       const b = AvatarConfig(
         baseBodyId: 'adult_male',
         skinToneId: 'tone_1',
         clothingId: 'default',
-        accessoryIds: const ['hat_cap', 'watch_silver'],
+        accessoryIds: ['hat_cap', 'watch_silver'],
       );
       expect(a, isNot(equals(b)));
     });
