@@ -11,6 +11,13 @@ import 'package:kinrel_avatar_studio/registry/base_bodies.dart';
 /// actually declared in `pubspec.yaml` and discoverable at runtime —
 /// not just that the PNG files exist on disk.
 void main() {
+  // Required because AssetManifest.load() calls rootBundle.loadString(),
+  // which needs the Flutter test binding to be initialized before it
+  // can access the bundled AssetManifest.json. Without this call, every
+  // test that touches AssetManifest fails with "Binding has not yet
+  // been initialized."
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   late AssetManifest manifest;
 
   setUp(() async {
