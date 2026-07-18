@@ -18,6 +18,14 @@ dependencies:
   # relaxed back to ^2.2.3.
   shared_preferences: 2.2.3
 
+dependency_overrides:
+  # Force the Android implementation to a Kotlin-1.7-compatible version.
+  # Without this override, `flutter pub get` resolves
+  # shared_preferences_android to the latest 2.4.x even though we pinned
+  # the facade package to 2.2.3, because the facade's constraints allow
+  # any 2.x android implementation.
+  shared_preferences_android: 2.2.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
